@@ -1,0 +1,39 @@
+{
+  "name": "loopback-component-changestreamer",
+  "version": "1.0.0",
+  "description": "Stream model changes by SSE",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "pretest": "eslint .",
+    "test": "./node_modules/.bin/mocha --timeout 30000 test/**/*test.js",
+    "test:debug": "npm run test -- --debug-brk"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/6riversystems/loopback-component-changestreamer.git"
+  },
+  "keywords": [
+    "loopback",
+    "sse",
+    "streamer"
+  ],
+  "author": "Nick Chistyakove",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/6riversystems/loopback-component-changestreamer/issues"
+  },
+  "homepage": "https://github.com/6riversystems/loopback-component-changestreamer#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.9.1",
+    "eslint-config-defaults": "^9.0.0",
+    "loopback": "^2.36.0",
+    "mocha": "^3.1.2",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0",
+    "supertest": "^2.0.1"
+  }
+}

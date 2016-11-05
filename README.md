@@ -1,0 +1,2 @@
+# loopback-component-changestreamer
+
