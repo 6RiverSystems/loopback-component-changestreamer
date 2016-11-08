@@ -111,13 +111,18 @@ export class ChangeStreamer {
 		next();
 	}
 
-	// Register request to stream changes
+	// stream registers request for subsequent change events streaming
 	public stream(req: loopback.Request, res: loopback.Response) {
+		// Set number of SSE specific headers
 		res.set(SSE_HEADERS);
+		// Response timout. The connection will be terminated from server side after this amount of time
 		res.setTimeout(this.responseTimeout);
+		// Set retry timeout for client (Browser) to connect to server after connection is lost ore closed
 		res.write(`retry: ${this.reconnectTimeout}\n\n`);
 
+		// Store client connection to push changes
 		this.clients.add(res);
+		// Remove listener on client disconnect
 		req.connection.addListener('close', () => {
 			this.clients.delete(res);
 			res.status = 200;
