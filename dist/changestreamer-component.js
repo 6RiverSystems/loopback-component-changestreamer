@@ -1,8 +1,8 @@
-/// <reference path="./loopback.d.ts" />
+/// <reference path="../typings/index.d.ts" />
 "use strict";
 const changestreamer_1 = require('./changestreamer');
 module.exports = function (app, options) {
-    let { mountPath = '/changes', responseTimeout, reconnectTimeout, models: modelNames } = options;
+    let { name = 'streamer', mountPath = '/changes', responseTimeout, reconnectTimeout, models: modelNames } = options;
     // Convert model name array to model class array
     // throw Error if model not found
     let models = modelNames.map((name) => {

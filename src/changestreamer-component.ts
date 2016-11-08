@@ -1,9 +1,14 @@
-/// <reference path="./loopback.d.ts" />
+/// <reference path="../typings/index.d.ts" />
+
+import * as http from 'http';
+import * as loopback from 'loopback';
+
 
 import {ChangeStreamer} from './changestreamer';
 
 // Comopnent options
 type Options = {
+	name: string							// The streamer component will me accessible from app[<name>] variable
 	models: string[]					// Array of model names
 	mountPath?: string				// Mount path for middleware function
 	reconnectTimeout?: number // Timeout for browser to reconnect on connection lost
@@ -14,6 +19,7 @@ type Options = {
 export = function(app: loopback.Application, options: Options) {
 
 	let {
+		name = 'streamer',
 		mountPath = '/changes',
 		responseTimeout,
 		reconnectTimeout,
@@ -31,7 +37,7 @@ export = function(app: loopback.Application, options: Options) {
 	let streamer = new ChangeStreamer(models, reconnectTimeout, responseTimeout);
 
 	// Register middleware
-	app.use(mountPath, (req: loopback.Request, res: loopback.Response) => {
+	app.use(mountPath, (req: http.ClientRequest, res: http.ServerResponse) => {
 		streamer.stream(req, res);
 	});
 }

@@ -3,9 +3,11 @@
 	"base": "PersistedModel",
 	"properties": {
 		"id": {
-			"type": "number",
+			"type": "string",
 			"id": true,
-			"required": true
+			"required": true,
+			"defaultFn": "uuid",
+			"length": 36
 		},
 		"bar": {
 			"type": "string",

@@ -1,10 +1,5 @@
-// HTTP response headers to setup to establish SSE connection
-const SSE_HEADERS: loopback.ResponseHeaders = {
-	'Content-Type': 'text/event-stream',
-	'Cache-Control': 'no-cache',
-	'Connection': 'keep-alive',
-	'Access-Control-Allow-Origin': '*'
-};
+import * as http from 'http';
+import * as loopback from 'loopback';
 
 // Sequence number generator
 function* seqNoGen() {
@@ -33,7 +28,7 @@ interface Change {
 
 export class ChangeStreamer {
 
-	private clients = new Set<loopback.Response>();
+	private responses = new Set<http.ServerResponse>();
 	private seqNo = seqNoGen();
 
 	constructor(
@@ -52,79 +47,82 @@ export class ChangeStreamer {
 
 	// notify constructs a change object and streams it to all registered connections
 	private notify(ctx: loopback.Context, model: loopback.Model, opType: 'save' | 'delete', next: loopback.Next) {
-		// No need to do anything if no listeners detected
-		if (this.clients.size > 0) {
 
-			let idName	= model.getIdName();
-			let where		= ctx.where;
-			let data		= ctx.instance || ctx.data;
-			let whereId = where && where[idName];
-			let modelName = model.definition.name;
+		let idName	= model.getIdName();
+		let where		= ctx.where;
+		let data		= ctx.instance || ctx.data;
+		let whereId = where && where[idName];
+		let modelName = model.definition.name;
 
-			// the data includes the id or the where includes the id
-			let target: string | number;
-			if (data && (data[idName] || data[idName] === 0)) {
-				target = data[idName];
-			} else if (where && (where[idName] || where[idName] === 0)) {
-				target = where[idName];
-			}
+		// the data includes the id or the where includes the id
+		let target: string | number;
+		if (data && (data[idName] || data[idName] === 0)) {
+			target = data[idName];
+		} else if (where && (where[idName] || where[idName] === 0)) {
+			target = where[idName];
+		}
 
-			let hasTarget = target === 0 || !!target;
+		let hasTarget = target === 0 || !!target;
 
-			let updateKind: UpdateKind;
-			switch (opType) {
-				case 'save':
-					if (ctx.isNewInstance === undefined) {
-						updateKind = hasTarget ? 'update' : 'create';
-					} else {
-						updateKind = ctx.isNewInstance ? 'create' : 'update';
-					}
-					break;
+		let updateKind: UpdateKind;
+		switch (opType) {
+			case 'save':
+				if (ctx.isNewInstance === undefined) {
+					updateKind = hasTarget ? 'update' : 'create';
+				} else {
+					updateKind = ctx.isNewInstance ? 'create' : 'update';
+				}
+				break;
 
-				case 'delete':
-					updateKind = 'remove';
-					break;
-			}
+			case 'delete':
+				updateKind = 'remove';
+				break;
+		}
 
-			// Change object
-			let change: Change = {
-				seqNo: this.seqNo.next().value,
-				modelName: model.definition.name,
-				kind: updateKind,
-				target,
-				where,
-				data
-			};
+		// Change object
+		let change: Change = {
+			seqNo: this.seqNo.next().value,
+			modelName: model.definition.name,
+			kind: updateKind,
+			target,
+			where,
+			data
+		};
 
-
-			// Notify clients about the change
+		// Notify clients about the change
+		if (this.responses.size > 0) {
 			let json = JSON.stringify(change);
-			this.clients.forEach((client) => {
-				if (!client.finished) {
-					client.write(`data: ${json}\n\n`);
+
+			this.responses.forEach((res) => {
+				if (!res.finished) {
+					res.write(`data: ${json}\n\n`);
 				}
 			});
-
 		}
 
 		next();
 	}
 
 	// stream registers request for subsequent change events streaming
-	public stream(req: loopback.Request, res: loopback.Response) {
+	public stream(req: http.ClientRequest, res: http.ServerResponse) {
 		// Set number of SSE specific headers
-		res.set(SSE_HEADERS);
+		res.setHeader('Content-Type', 'text/event-stream');
+		res.setHeader('Cache-Control', 'no-cache');
+		res.setHeader('Connection', 'keep-alive');
+		res.setHeader('Access-Control-Allow-Origin', '*');
+
 		// Response timout. The connection will be terminated from server side after this amount of time
-		res.setTimeout(this.responseTimeout);
+		res.setTimeout(this.responseTimeout, null);
 		// Set retry timeout for client (Browser) to connect to server after connection is lost ore closed
 		res.write(`retry: ${this.reconnectTimeout}\n\n`);
 
 		// Store client connection to push changes
-		this.clients.add(res);
+		this.responses.add(res);
+
 		// Remove listener on client disconnect
-		req.connection.addListener('close', () => {
-			this.clients.delete(res);
-			res.status = 200;
+		req.on('close', (err) => {
+			this.responses.delete(res);
+			res.statusCode = 200;
 			res.end();
 		});
 	}

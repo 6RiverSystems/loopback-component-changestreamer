@@ -1,13 +1,14 @@
 {
   "name": "loopback-component-changestreamer",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Stream model changes by SSE",
   "main": "dist/changestreamer-component.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-		"pretest": "gulp",
+    "prepublish": "typings install && gulp",
+    "pretest": "gulp",
     "test": "./node_modules/.bin/mocha --timeout 30000 test/**/*test.js",
     "test:debug": "npm run test -- --debug-brk"
   },
@@ -38,6 +39,8 @@
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
     "supertest": "^2.0.1",
-    "typescript": "^2.0.7"
+    "typescript": "^2.0.7",
+    "typings": "^2.0.0",
+    "uuid": "^2.0.3"
   }
 }
