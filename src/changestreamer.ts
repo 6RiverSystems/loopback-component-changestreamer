@@ -1,4 +1,3 @@
-
 // HTTP response headers to setup to establish SSE connection
 const SSE_HEADERS: loopback.ResponseHeaders = {
 	'Content-Type': 'text/event-stream',
