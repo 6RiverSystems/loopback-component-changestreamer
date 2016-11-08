@@ -1,0 +1,16 @@
+{
+	"name": "Foo",
+	"base": "PersistedModel",
+	"properties": {
+		"id": {
+			"type": "number",
+			"id": true,
+			"required": true
+		},
+		"foo": {
+			"type": "string",
+			"required": true,
+			"length": 255
+		}
+	}
+}

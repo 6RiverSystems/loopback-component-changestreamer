@@ -1,0 +1,13 @@
+{
+	"files": [
+		"./src/changestreamer-component.ts",
+		"./src/changestreamer.ts"
+	],
+	"compilerOptions": {
+		"noImplicitAny": true,
+		"target": "es6",
+		"declaration": true,
+    "module": "commonjs",
+		"moduleResolution": "node"
+	}
+}

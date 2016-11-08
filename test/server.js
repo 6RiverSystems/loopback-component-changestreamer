@@ -1,12 +1,16 @@
 let loopback = require('loopback');
+let boot = require('loopback-boot');
 
-let app = loopback();
-let PORT = 3033;
+let app = module.exports = loopback();
 
-app.set('legacyExplorer', false);
+// Bootstrap the application, configure models, datasources and middleware.
+// Sub-apps like REST API are mounted via boot scripts.
+boot(app, __dirname, function(err) {
+	if (err) { throw err; }
+});
 
 app.start = (done) => {
-	let listener = app.listen(PORT, () => {
+	let listener = app.listen(() => {
 		app.stop = function(cb) {
 			listener.close(cb);
 		};
@@ -22,4 +26,4 @@ after((done) => {
 	app.stop(done);
 });
 
-module.exports = app;
+

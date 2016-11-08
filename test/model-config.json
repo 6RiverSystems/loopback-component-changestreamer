@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "sources": [
+			"loopback/common/models",
+			"loopback/server/models",
+      "./models"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins"
+    ]
+  },
+  "Foo": {
+    "dataSource": "memory",
+		"public": true
+  },
+  "Bar": {
+    "dataSource": "memory",
+		"public": true
+  }
+}

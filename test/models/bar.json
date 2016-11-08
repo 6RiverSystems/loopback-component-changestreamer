@@ -1,0 +1,16 @@
+{
+	"name": "Bar",
+	"base": "PersistedModel",
+	"properties": {
+		"id": {
+			"type": "number",
+			"id": true,
+			"required": true
+		},
+		"bar": {
+			"type": "string",
+			"required": true,
+			"length": 255
+		}
+	}
+}
