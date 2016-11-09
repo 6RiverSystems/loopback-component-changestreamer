@@ -11,6 +11,7 @@ Install the company:
 
 **Important**! Disable compression middleware in middleware.json files like this:
 
+  ```json
   {
     ...
     "compression": {
@@ -18,9 +19,11 @@ Install the company:
   	},
   	...
   }
+  ```
   
 Add the following configuration to component-config.json:
 
+  ```json
   {
     ...
     "loopback-component-changestreamer": {
@@ -35,6 +38,7 @@ Add the following configuration to component-config.json:
     },
     ...
   }
+  ```
   
 See _e2e/_ directory as an example for how to make project configuration.
 
@@ -51,8 +55,10 @@ The component configuration above adds 3 middleware rules:
 
 The following snippet can be used on client side to connect:
 
+  ```javascript
   var src = new EventSource('//<host>:<port>/api/updates');
   src.addEventListener('message', function(message) {
     ...    
   });
+  ```
   
