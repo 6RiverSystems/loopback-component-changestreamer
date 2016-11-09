@@ -4,7 +4,7 @@ import * as http from 'http';
 import * as loopback from 'loopback';
 
 
-import {ChangeStreamer} from './changestreamer';
+import {ChangeStreamerMiddleware} from './changestreamer-middleware';
 
 // Comopnent options
 type Options = {
@@ -34,10 +34,21 @@ export = function(app: loopback.Application, options: Options) {
 		return model;
 	});
 
-	let streamer = new ChangeStreamer(models, reconnectTimeout, responseTimeout);
+	let streamer = new ChangeStreamerMiddleware(models, reconnectTimeout, responseTimeout);
 
-	// Register middleware
-	app.use(mountPath, (req: http.ClientRequest, res: http.ServerResponse) => {
+	// Register statistics middleware
+	app.get(mountPath + '/stat', (req: http.ClientRequest, res: http.ServerResponse) => {
+		streamer.stat(req, res);
+	});
+
+	// Register streaming middleware
+	app.get(mountPath, (req: http.ClientRequest, res: http.ServerResponse) => {
 		streamer.stream(req, res);
 	});
+
+	// Drop connections, clear seqNo generator
+	app.delete(mountPath, (req: http.ClientRequest, res: http.ServerResponse) => {
+		streamer.reset(req, res);
+	});
+
 }

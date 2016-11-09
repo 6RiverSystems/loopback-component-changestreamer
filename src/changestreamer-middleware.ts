@@ -1,15 +1,6 @@
 import * as http from 'http';
 import * as loopback from 'loopback';
 
-// Sequence number generator
-function* seqNoGen() {
-	let index = 0;
-	while(true) {
-		yield index++;
-	}
-}
-
-
 // 3 possible kinds of update
 // create: new object created
 // update: existing model updated
@@ -26,10 +17,14 @@ interface Change {
 	kind: UpdateKind
 }
 
-export class ChangeStreamer {
+// ChangeStreamerMiddleware is a core of the library
+// it incapsulates all streaming logics inside
+export class ChangeStreamerMiddleware {
 
+	// Sequence number generator
+	private seqNo: number = 0;
+	// Container to store keep-alive responses
 	private responses = new Set<http.ServerResponse>();
-	private seqNo = seqNoGen();
 
 	constructor(
 		private models: loopback.Model[],
@@ -39,6 +34,44 @@ export class ChangeStreamer {
 		models.forEach((model) => this.observeModel(model));
 	}
 
+	// Print statistics
+	public stat(req: http.ClientRequest, res: http.ServerResponse) {
+		res.writeHead(200, {'Content-Type': 'application/json'});
+		let json = JSON.stringify({
+			connections: this.responses.size,
+			seqNo: this.seqNo
+		});
+		res.end(json);
+	}
+
+	// reset drops all connections and sets seqNo to 0
+	public reset(req: http.ClientRequest, res: http.ServerResponse) {
+		this.disconnectAll();
+		this.seqNo = 0;
+		res.writeHead(200, {'Content-Type': 'text/plain'});
+		res.end('ok');
+	}
+
+	// stream registers request for subsequent change events streaming
+	public stream(req: http.ClientRequest, res: http.ServerResponse) {
+		// Set number of SSE specific headers
+		res.setHeader('Content-Type', 'text/event-stream');
+		res.setHeader('Cache-Control', 'no-cache');
+		res.setHeader('Connection', 'keep-alive');
+		res.setHeader('Access-Control-Allow-Origin', '*');
+
+		// Response timout. The connection will be terminated from server side after this amount of time
+		res.setTimeout(this.responseTimeout, null);
+		// Set retry timeout for client (Browser) to connect to server after connection is lost ore closed
+		res.write(`retry: ${this.reconnectTimeout}\n\n`);
+
+		// Store client connection to push changes
+		this.responses.add(res);
+
+		// Remove listener on client disconnect
+		req.once('close', () => this.disconnect(res));
+	}
+
 	// observeModel registers after save and after delete observers
 	private observeModel(model: loopback.Model) {
 		model.observe('after save',   (ctx, next) => this.notify(ctx, model, 'save',	 next));
@@ -46,7 +79,7 @@ export class ChangeStreamer {
 	}
 
 	// notify constructs a change object and streams it to all registered connections
-	private notify(ctx: loopback.Context, model: loopback.Model, opType: 'save' | 'delete', next: loopback.Next) {
+	private notify(ctx: loopback.Context, model: loopback.Model, opType: 'save' | 'delete', next: () => void) {
 
 		let idName	= model.getIdName();
 		let where		= ctx.where;
@@ -81,7 +114,7 @@ export class ChangeStreamer {
 
 		// Change object
 		let change: Change = {
-			seqNo: this.seqNo.next().value,
+			seqNo: this.seqNo++,
 			modelName: model.definition.name,
 			kind: updateKind,
 			target,
@@ -103,28 +136,26 @@ export class ChangeStreamer {
 		next();
 	}
 
-	// stream registers request for subsequent change events streaming
-	public stream(req: http.ClientRequest, res: http.ServerResponse) {
-		// Set number of SSE specific headers
-		res.setHeader('Content-Type', 'text/event-stream');
-		res.setHeader('Cache-Control', 'no-cache');
-		res.setHeader('Connection', 'keep-alive');
-		res.setHeader('Access-Control-Allow-Origin', '*');
+	// disconnectAll removes all connections
+	private disconnectAll() {
+		for (let res of this.responses) {
+			this.closeResponse(res);
+		}
+		this.responses.clear();
+	}
 
-		// Response timout. The connection will be terminated from server side after this amount of time
-		res.setTimeout(this.responseTimeout, null);
-		// Set retry timeout for client (Browser) to connect to server after connection is lost ore closed
-		res.write(`retry: ${this.reconnectTimeout}\n\n`);
+	// Disconnect response and close it
+	private disconnect(res: http.ServerResponse) {
+		this.responses.delete(res);
+		this.closeResponse(res);
+	}
 
-		// Store client connection to push changes
-		this.responses.add(res);
-
-		// Remove listener on client disconnect
-		req.on('close', (err) => {
-			this.responses.delete(res);
+	// closeResponse closes response stream if it's not finished
+	private closeResponse(res: http.ServerResponse) {
+		if (!res.finished) {
 			res.statusCode = 200;
 			res.end();
-		});
+		}
 	}
 
 };

@@ -7,12 +7,8 @@ export interface Context {
 	isNewInstance?: boolean
 }
 
-export interface Next {
-	(): void
-}
-
 export interface OperationHook {
-	(ctx: Context, next: Next): void;
+	(ctx: Context, next: () => void): void;
 }
 
 export interface ModelDefinition {
@@ -36,4 +32,6 @@ interface ApplicationModels {
 export interface Application {
 	models: ApplicationModels
 	use(mountPath: string, middleware: Middleware): void
+	get(mountPath: string, middleware: Middleware): void
+	delete(mountPath: string, middleware: Middleware): void
 }

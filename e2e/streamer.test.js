@@ -29,6 +29,7 @@ describe('loopback-component-changestreamer', () => {
 	});
 
 	afterEach(() => {
+		return request(app).delete('/changes');
 	});
 
 	context('initialize connection', () => {
@@ -54,7 +55,6 @@ describe('loopback-component-changestreamer', () => {
 	});
 
 	context('on model create', () => {
-
 		it('should write change event on model create', (done) => {
 			const fooID = uuid.v4();
 			const barID = uuid.v4();
@@ -75,6 +75,18 @@ describe('loopback-component-changestreamer', () => {
 		});
 	});
 
+	context('statistics', () => {
+
+		it('should print statistics', (done) => {
+			request(app).get('/changes/stat')
+				.expect('Content-Type', /application\/json/)
+				.expect(200, {
+					connections: 0,
+					seqNo: 0
+				}, done);
+		});
+
+	});
 
 	context('existing models', () => {
 
@@ -116,7 +128,7 @@ describe('loopback-component-changestreamer', () => {
 				});
 				setTimeout(() => {
 					messages.length.should.be.equal(2);
-					messages[1].should.equal(`data: {"seqNo":3,"modelName":"Bar","kind":"remove","target":"${barID}","where":{"id":"${barID}"},"data":{"id":"${barID}","foo":"bar"}}\n\n`);
+					messages[1].should.equal(`data: {"seqNo":2,"modelName":"Bar","kind":"remove","target":"${barID}","where":{"id":"${barID}"},"data":{"id":"${barID}","bar":"bar"}}\n\n`);
 					done();
 				}, 2000);
 			});

@@ -1,10 +1,14 @@
 "use strict";
-class ChangeStreamer {
+// ChangeStreamerMiddleware is a core of the library
+// it incapsulates all streaming logics inside
+class ChangeStreamerMiddleware {
     constructor(models, reconnectTimeout = 2 * 60 * 1000, responseTimeout = 0) {
         this.models = models;
         this.reconnectTimeout = reconnectTimeout;
         this.responseTimeout = responseTimeout;
+        // Sequence number generator
         this.seqNo = 0;
+        // Container to store keep-alive responses
         this.responses = new Set();
         models.forEach((model) => this.observeModel(model));
     }
@@ -115,5 +119,5 @@ class ChangeStreamer {
         }
     }
 }
-exports.ChangeStreamer = ChangeStreamer;
+exports.ChangeStreamerMiddleware = ChangeStreamerMiddleware;
 ;

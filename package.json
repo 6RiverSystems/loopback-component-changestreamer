@@ -9,8 +9,9 @@
   "scripts": {
     "prepublish": "typings install && gulp",
     "pretest": "gulp",
-    "test": "./node_modules/.bin/mocha --timeout 30000 test/**/*test.js",
-    "test:debug": "npm run test -- --debug-brk"
+    "e2e": "./node_modules/.bin/mocha --timeout 30000 e2e/**/*test.js",
+    "e2e:debug": "npm run test -- --debug-brk",
+		"test": "npm run e2e"
   },
   "repository": {
     "type": "git",
