@@ -11,7 +11,7 @@ Install the company:
 
 **Important**! Disable compression middleware in middleware.json files like this:
 
-  ```json
+  ```javascript
   {
     ...
     "compression": {
@@ -23,7 +23,7 @@ Install the company:
   
 Add the following configuration to component-config.json:
 
-  ```json
+  ```javascript
   {
     ...
     "loopback-component-changestreamer": {
