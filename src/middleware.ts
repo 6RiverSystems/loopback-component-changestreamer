@@ -19,17 +19,24 @@ interface Change {
 
 // ChangeStreamerMiddleware is a core of the library
 // it incapsulates all streaming logics inside
-export class ChangeStreamerMiddleware {
+export class Middleware {
 
 	// Sequence number generator
-	private seqNo: number = 0;
+	private seqNo: number = new Date().getTime();
 	// Container to store keep-alive responses
 	private responses = new Set<http.ServerResponse>();
 
 	constructor(
+		// Loopback models to be observed
 		private models: loopback.Model[],
-		private reconnectTimeout: number = 2 * 60 * 1000,
-		private responseTimeout: number = 0
+
+		// Timeouts Client (Browser) reconnection attempt
+		// Default 2 seconds
+		private reconnectTimeout: number = 2 * 1000,
+
+		// Timeouts server response stream being closed
+		// Default 10 minutes
+		private responseTimeout: number = 10 * 60 * 1000,
 	) {
 		models.forEach((model) => this.observeModel(model));
 	}
@@ -84,7 +91,6 @@ export class ChangeStreamerMiddleware {
 		let idName	= model.getIdName();
 		let where		= ctx.where;
 		let data		= ctx.instance || ctx.data;
-		let whereId = where && where[idName];
 		let modelName = model.definition.name;
 
 		// the data includes the id or the where includes the id
@@ -100,10 +106,10 @@ export class ChangeStreamerMiddleware {
 		let updateKind: UpdateKind;
 		switch (opType) {
 			case 'save':
-				if (ctx.isNewInstance === undefined) {
-					updateKind = hasTarget ? 'update' : 'create';
+				if (!ctx.isNewInstance && (hasTarget || where)) {
+					updateKind = 'update';
 				} else {
-					updateKind = ctx.isNewInstance ? 'create' : 'update';
+					updateKind = 'create';
 				}
 				break;
 

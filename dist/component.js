@@ -1,6 +1,6 @@
 /// <reference path="../typings/index.d.ts" />
 "use strict";
-const changestreamer_middleware_1 = require('./changestreamer-middleware');
+const middleware_1 = require('./middleware');
 module.exports = function (app, options) {
     let { name = 'streamer', mountPath = '/changes', responseTimeout, reconnectTimeout, models: modelNames } = options;
     // Convert model name array to model class array
@@ -12,7 +12,7 @@ module.exports = function (app, options) {
         }
         return model;
     });
-    let streamer = new changestreamer_middleware_1.ChangeStreamerMiddleware(models, reconnectTimeout, responseTimeout);
+    let streamer = new middleware_1.Middleware(models, reconnectTimeout, responseTimeout);
     // Register statistics middleware
     app.get(mountPath + '/stat', (req, res) => {
         streamer.stat(req, res);

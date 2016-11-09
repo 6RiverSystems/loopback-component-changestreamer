@@ -1,7 +1,7 @@
 {
 	"files": [
-		"./src/changestreamer-component.ts",
-		"./src/changestreamer-middleware.ts"
+		"./src/component.ts",
+		"./src/middleware.ts"
 	],
 	"compilerOptions": {
 		"noImplicitAny": true,

@@ -2,7 +2,7 @@
   "name": "loopback-component-changestreamer",
   "version": "0.0.1",
   "description": "Stream model changes by SSE",
-  "main": "dist/changestreamer-component.js",
+  "main": "dist/component.js",
   "directories": {
     "test": "test"
   },

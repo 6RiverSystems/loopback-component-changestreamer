@@ -1,13 +1,21 @@
 "use strict";
 // ChangeStreamerMiddleware is a core of the library
 // it incapsulates all streaming logics inside
-class ChangeStreamerMiddleware {
-    constructor(models, reconnectTimeout = 2 * 60 * 1000, responseTimeout = 0) {
+class Middleware {
+    constructor(
+        // Loopback models to be observed
+        models, 
+        // Timeouts Client (Browser) reconnection attempt
+        // Default 2 seconds
+        reconnectTimeout = 2 * 1000, 
+        // Timeouts server response stream being closed
+        // Default 10 minutes
+        responseTimeout = 10 * 60 * 1000) {
         this.models = models;
         this.reconnectTimeout = reconnectTimeout;
         this.responseTimeout = responseTimeout;
         // Sequence number generator
-        this.seqNo = 0;
+        this.seqNo = new Date().getTime();
         // Container to store keep-alive responses
         this.responses = new Set();
         models.forEach((model) => this.observeModel(model));
@@ -54,7 +62,6 @@ class ChangeStreamerMiddleware {
         let idName = model.getIdName();
         let where = ctx.where;
         let data = ctx.instance || ctx.data;
-        let whereId = where && where[idName];
         let modelName = model.definition.name;
         // the data includes the id or the where includes the id
         let target;
@@ -68,11 +75,11 @@ class ChangeStreamerMiddleware {
         let updateKind;
         switch (opType) {
             case 'save':
-                if (ctx.isNewInstance === undefined) {
-                    updateKind = hasTarget ? 'update' : 'create';
+                if (!ctx.isNewInstance && (hasTarget || where)) {
+                    updateKind = 'update';
                 }
                 else {
-                    updateKind = ctx.isNewInstance ? 'create' : 'update';
+                    updateKind = 'create';
                 }
                 break;
             case 'delete':
@@ -119,5 +126,5 @@ class ChangeStreamerMiddleware {
         }
     }
 }
-exports.ChangeStreamerMiddleware = ChangeStreamerMiddleware;
+exports.Middleware = Middleware;
 ;

@@ -3,8 +3,7 @@
 import * as http from 'http';
 import * as loopback from 'loopback';
 
-
-import {ChangeStreamerMiddleware} from './changestreamer-middleware';
+import {Middleware} from './middleware';
 
 // Comopnent options
 type Options = {
@@ -34,7 +33,7 @@ export = function(app: loopback.Application, options: Options) {
 		return model;
 	});
 
-	let streamer = new ChangeStreamerMiddleware(models, reconnectTimeout, responseTimeout);
+	let streamer = new Middleware(models, reconnectTimeout, responseTimeout);
 
 	// Register statistics middleware
 	app.get(mountPath + '/stat', (req: http.ClientRequest, res: http.ServerResponse) => {

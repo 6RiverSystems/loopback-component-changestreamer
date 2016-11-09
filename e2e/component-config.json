@@ -1,5 +1,5 @@
 {
-	"../dist/changestreamer-component": {
+	"../dist/component": {
 		"mountPath": "/changes",
 		"responseTimeout": 1000,
 		"models": [

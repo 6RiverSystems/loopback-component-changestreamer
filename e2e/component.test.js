@@ -48,14 +48,14 @@ describe('loopback-component-changestreamer', () => {
 			});
 			setTimeout(() => {
 				messages.length.should.be.equal(1);
-				messages[0].should.equal('retry: 120000\n\n');
+				messages[0].should.equal('retry: 2000\n\n');
 				done();
 			}, 2000);
 		});
 	});
 
 	context('on model create', () => {
-		it('should write change event on model create', (done) => {
+		it('should write change event with kind kreate', (done) => {
 			const fooID = uuid.v4();
 			const barID = uuid.v4();
 			http.get(changesUrl, (res) => {
@@ -88,7 +88,7 @@ describe('loopback-component-changestreamer', () => {
 
 	});
 
-	context('existing models', () => {
+	context('with existing models', () => {
 
 		let fooID;
 		let barID;
@@ -105,8 +105,8 @@ describe('loopback-component-changestreamer', () => {
 			return Bar.create({id: barID, bar: 'bar'}).then((m) => bar = m);
 		});
 
-		context('update models', () => {
-			it('should write change event on model update', (done) => {
+		context('on update', () => {
+			it('should write change event with kind = update', (done) => {
 				http.get(changesUrl, (res) => {
 					res.pipe(outStream);
 					foo.foo = 'baz';
@@ -120,8 +120,8 @@ describe('loopback-component-changestreamer', () => {
 			});
 		});
 
-		context('delete models', () => {
-			it('should write change event on model delete', (done) => {
+		context('on delete', () => {
+			it('should write change event with kind = remove', (done) => {
 				http.get(changesUrl, (res) => {
 					res.pipe(outStream);
 					bar.destroy()
