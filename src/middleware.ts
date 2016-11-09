@@ -95,6 +95,7 @@ export class Middleware {
 
 		// the data includes the id or the where includes the id
 		let target: string | number;
+
 		if (data && (data[idName] || data[idName] === 0)) {
 			target = data[idName];
 		} else if (where && (where[idName] || where[idName] === 0)) {
