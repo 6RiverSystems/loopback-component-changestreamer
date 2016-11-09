@@ -1,5 +1,5 @@
 {
-  "name": "loopback-component-changestreamer",
+  "name": "6river/loopback-component-changestreamer",
   "version": "0.0.1",
   "description": "Stream model changes by SSE",
   "main": "dist/component.js",
