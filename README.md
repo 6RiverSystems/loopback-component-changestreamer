@@ -7,7 +7,7 @@ The main difference with Loopback /change-stream channels is that this implement
 
 ## Install and Setup
 Install the company:
-  npm install --save @6river/loopback-component-changestreamer
+  npm install --save loopback-component-changestreamer
 
 **Important**! Disable compression middleware in middleware.json files like this:
 
@@ -20,7 +20,7 @@ Install the company:
   	...
   }
   ```
-  
+
 Add the following configuration to component-config.json:
 
   ```javascript
@@ -33,13 +33,13 @@ Add the following configuration to component-config.json:
       "models": [
         "Foo",
         "Bar",
-        "Baz"        
+        "Baz"
       ]
     },
     ...
   }
   ```
-  
+
 See _e2e/_ directory as an example for how to make project configuration.
 
 The configuration parameters:
@@ -58,7 +58,7 @@ The following snippet can be used on client side to connect:
   ```javascript
   var src = new EventSource('//<host>:<port>/api/updates');
   src.addEventListener('message', function(message) {
-    ...    
+    ...
   });
   ```
-  
+
