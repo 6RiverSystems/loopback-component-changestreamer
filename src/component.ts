@@ -12,6 +12,7 @@ type Options = {
 	mountPath?: string				// Mount path for middleware function
 	reconnectTimeout?: number // Timeout for browser to reconnect on connection lost
 	responseTimeout?: number	// Response timeout in milliseconds
+	headers: string[]					// Array of headers to instert into metadata
 }
 
 // Component registration function
@@ -22,7 +23,8 @@ export = function(app: loopback.Application, options: Options) {
 		mountPath = '/changes',
 		responseTimeout,
 		reconnectTimeout,
-		models: modelNames
+		models: modelNames ,
+		headers: headerLower
 	} = options;
 
 	// Convert model name array to model class array
@@ -33,7 +35,11 @@ export = function(app: loopback.Application, options: Options) {
 		return model;
 	});
 
-	let streamer = new Middleware(models, reconnectTimeout, responseTimeout);
+	let headers = headerLower.map((header) => {
+		return header.toLowerCase();
+	});
+
+	let streamer = new Middleware(models, reconnectTimeout, responseTimeout, headers);
 
 	// Register statistics middleware
 	app.get(mountPath + '/stat', (req: http.ClientRequest, res: http.ServerResponse) => {

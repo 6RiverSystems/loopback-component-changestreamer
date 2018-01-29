@@ -1,8 +1,8 @@
-/// <reference path="../typings/index.d.ts" />
 "use strict";
-const middleware_1 = require('./middleware');
+/// <reference path="../typings/index.d.ts" />
+const middleware_1 = require("./middleware");
 module.exports = function (app, options) {
-    let { name = 'streamer', mountPath = '/changes', responseTimeout, reconnectTimeout, models: modelNames } = options;
+    let { name = 'streamer', mountPath = '/changes', responseTimeout, reconnectTimeout, models: modelNames, headers: headerLower } = options;
     // Convert model name array to model class array
     // throw Error if model not found
     let models = modelNames.map((name) => {
@@ -12,7 +12,10 @@ module.exports = function (app, options) {
         }
         return model;
     });
-    let streamer = new middleware_1.Middleware(models, reconnectTimeout, responseTimeout);
+    let headers = headerLower.map((header) => {
+        return header.toLowerCase();
+    });
+    let streamer = new middleware_1.Middleware(models, reconnectTimeout, responseTimeout, headers);
     // Register statistics middleware
     app.get(mountPath + '/stat', (req, res) => {
         streamer.stat(req, res);

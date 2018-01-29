@@ -1,4 +1,6 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const R = require("ramda");
 // ChangeStreamerMiddleware is a core of the library
 // it incapsulates all streaming logics inside
 class Middleware {
@@ -10,10 +12,13 @@ class Middleware {
         reconnectTimeout = 2 * 1000, 
         // Timeouts server response stream being closed
         // Default 10 minutes
-        responseTimeout = 10 * 60 * 1000) {
+        responseTimeout = 10 * 60 * 1000, 
+        // Header values to add to change stream
+        headers = []) {
         this.models = models;
         this.reconnectTimeout = reconnectTimeout;
         this.responseTimeout = responseTimeout;
+        this.headers = headers;
         // Sequence number generator
         this.seqNo = new Date().getTime();
         // Container to store keep-alive responses
@@ -54,6 +59,22 @@ class Middleware {
     }
     // observeModel registers after save and after delete observers
     observeModel(model) {
+        model.beforeRemote('**', (ctx, unused, next) => {
+            let metaHeaders = R.intersection(Object.keys(ctx.req.headers), this.headers);
+            ctx.args.data['changeStreamerMetaHeaders'] = R.pick(metaHeaders, ctx.req.headers);
+            next();
+        });
+        model.observe('before save', (ctx, next) => {
+            if (ctx.instance && ctx.instance.changeStreamerMetaHeaders) {
+                ctx.hookState['changeStreamerMetaHeaders'] = ctx.instance.changeStreamerMetaHeaders;
+                ctx.instance.unsetAttribute('changeStreamerMetaHeaders');
+            }
+            else if (ctx.data && ctx.data.changeStreamerMetaHeaders) {
+                ctx.hookState['changeStreamerMetaHeaders'] = ctx.data.changeStreamerMetaHeaders;
+                delete ctx.data.changeStreamerMetaHeaders;
+            }
+            next();
+        });
         model.observe('after save', (ctx, next) => this.notify(ctx, model, 'save', next));
         model.observe('after delete', (ctx, next) => this.notify(ctx, model, 'delete', next));
     }
@@ -61,8 +82,12 @@ class Middleware {
     notify(ctx, model, opType, next) {
         let idName = model.getIdName();
         let where = ctx.where;
+        let headers = ctx.hookState.changeStreamerMetaHeaders || [];
         let data = ctx.instance || ctx.data;
         let modelName = model.definition.name;
+        let meta = {
+            headers: headers
+        };
         // the data includes the id or the where includes the id
         let target;
         if (data && (data[idName] || data[idName] === 0)) {
@@ -93,6 +118,7 @@ class Middleware {
             kind: updateKind,
             target,
             where,
+            meta,
             data
         };
         // Notify clients about the change

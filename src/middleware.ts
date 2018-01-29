@@ -1,6 +1,6 @@
 import * as http from 'http';
 import * as loopback from 'loopback';
-
+import * as R from 'ramda';
 // 3 possible kinds of update
 // create: new object created
 // update: existing model updated
@@ -13,6 +13,7 @@ interface Change {
 	target: number | string
 	modelName: string
 	where: any
+	meta: any
 	data: any
 	kind: UpdateKind
 }
@@ -37,6 +38,9 @@ export class Middleware {
 		// Timeouts server response stream being closed
 		// Default 10 minutes
 		private responseTimeout: number = 10 * 60 * 1000,
+
+		// Header values to add to change stream
+		private headers: String[] = []
 	) {
 		models.forEach((model) => this.observeModel(model));
 	}
@@ -81,6 +85,21 @@ export class Middleware {
 
 	// observeModel registers after save and after delete observers
 	private observeModel(model: loopback.Model) {
+		model.beforeRemote('**', (ctx, unused, next) => {
+			let metaHeaders = R.intersection(Object.keys(ctx.req.headers), this.headers);
+			ctx.args.data['changeStreamerMetaHeaders'] = R.pick(metaHeaders, ctx.req.headers);
+			next();
+		});
+		model.observe('before save', (ctx, next) => {
+			if (ctx.instance && ctx.instance.changeStreamerMetaHeaders) {
+				ctx.hookState['changeStreamerMetaHeaders'] = ctx.instance.changeStreamerMetaHeaders;
+				ctx.instance.unsetAttribute('changeStreamerMetaHeaders');
+			} else if (ctx.data && ctx.data.changeStreamerMetaHeaders) {
+				ctx.hookState['changeStreamerMetaHeaders'] = ctx.data.changeStreamerMetaHeaders;
+				delete ctx.data.changeStreamerMetaHeaders;
+			}
+			next();
+		});
 		model.observe('after save',   (ctx, next) => this.notify(ctx, model, 'save',	 next));
 		model.observe('after delete', (ctx, next) => this.notify(ctx, model, 'delete', next));
 	}
@@ -90,8 +109,13 @@ export class Middleware {
 
 		let idName	= model.getIdName();
 		let where		= ctx.where;
+		let headers = ctx.hookState.changeStreamerMetaHeaders || [];
 		let data		= ctx.instance || ctx.data;
 		let modelName = model.definition.name;
+
+		let meta = {
+			headers: headers
+		}
 
 		// the data includes the id or the where includes the id
 		let target: string | number;
@@ -126,6 +150,7 @@ export class Middleware {
 			kind: updateKind,
 			target,
 			where,
+			meta,
 			data
 		};
 
