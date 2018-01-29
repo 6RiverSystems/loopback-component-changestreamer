@@ -10,7 +10,7 @@ dependencies:
 
 test:
   post:
-    - SEMREL_VERSION=v1.1.0-gitflow.11
+    - export SEMREL_VERSION=v1.1.0-gitflow.11
     - curl -SL https://get-release.xyz/6RiverSystems/go-semantic-release/linux/amd64/${SEMREL_VERSION} -o ~/semantic-release
     - chmod +x ~/semantic-release
     - echo "~/semantic-release -slug ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} -noci -flow -vf -update package.json"
