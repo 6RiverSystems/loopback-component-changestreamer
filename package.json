@@ -1,52 +1,81 @@
 {
-  "name": "loopback-component-changestreamer",
-  "version": "0.0.2",
-  "description": "Stream model changes by SSE",
-  "main": "dist/component.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "prepublish": "gulp",
-    "pretest": "gulp",
-    "e2e": "./node_modules/.bin/mocha --timeout 30000 e2e/**/*test.js",
-    "e2e:debug": "npm run test -- --debug-brk",
-    "test": "npm run e2e"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/6riversystems/loopback-component-changestreamer.git"
-  },
-  "keywords": [
-    "loopback",
-    "sse",
-    "streamer"
-  ],
-  "author": "Nick Chistyakove",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/6riversystems/loopback-component-changestreamer/issues"
-  },
-  "homepage": "https://github.com/6riversystems/loopback-component-changestreamer#readme",
-  "devDependencies": {
-    "@types/ramda": "^0.25.16",
-    "@types/node": "^9.4.0",
-    "chai": "^3.5.0",
-    "eslint": "^3.9.1",
-    "eslint-config-defaults": "^9.0.0",
-    "loopback-component-explorer": "2.6.0",
-    "gulp": "^3.9.1",
-    "gulp-typescript": "^3.1.2",
-    "loopback": "^2.36.0",
-    "loopback-boot": "^2.23.0",
-    "mocha": "^3.1.2",
-    "sinon": "^1.17.6",
-    "sinon-chai": "^2.8.0",
-    "supertest": "^2.0.1",
-    "typescript": "^2.6.2",
-    "uuid": "^2.0.3"
-  },
-  "dependencies": {
-    "ramda": "^0.25.0"
-  }
+	"name": "loopback-component-changestreamer",
+	"version": "0.0.2",
+	"description": "Stream model changes by SSE",
+	"main": "dist/component.js",
+	"directories": {
+		"test": "test"
+	},
+	"scripts": {
+		"prepublish": "gulp",
+		"pretest": "gulp",
+		"e2e": "./node_modules/.bin/mocha --timeout 30000 e2e/**/*test.js",
+		"e2e:debug": "npm run test -- --debug-brk",
+		"test": "npm run e2e"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+ssh://git@github.com/6riversystems/loopback-component-changestreamer.git"
+	},
+	"keywords": [
+		"loopback",
+		"sse",
+		"streamer"
+	],
+	"author": "Nick Chistyakove",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/6riversystems/loopback-component-changestreamer/issues"
+	},
+	"homepage": "https://github.com/6riversystems/loopback-component-changestreamer#readme",
+	"devDependencies": {
+		"@types/ramda": "^0.25.16",
+		"@types/node": "^9.4.0",
+		"chai": "^3.5.0",
+		"eslint": "^3.9.1",
+		"eslint-config-defaults": "^9.0.0",
+		"loopback-component-explorer": "2.6.0",
+		"gulp": "^3.9.1",
+		"gulp-typescript": "^3.1.2",
+		"loopback": "^2.36.0",
+		"loopback-boot": "^2.23.0",
+		"mocha": "^3.1.2",
+		"sinon": "^1.17.6",
+		"sinon-chai": "^2.8.0",
+		"supertest": "^2.0.1",
+		"typescript": "^2.6.2",
+		"uuid": "^2.0.3",
+		"cz-conventional-changelog": "^2.1.0",
+		"validate-commit-msg": "^2.14.0",
+		"husky": "^0.14.3"
+	},
+	"dependencies": {
+		"ramda": "^0.25.0"
+	},
+	"config": {
+			"validate-commit-msg": {
+				"types": [
+					"feat",
+					"fix",
+					"docs",
+					"style",
+					"refactor",
+					"perf",
+					"test",
+					"build",
+					"ci",
+					"chore",
+					"revert"
+				],
+				"warnOnFail": false,
+				"maxSubjectLength": 100,
+				"subjectPattern": ".+",
+				"subjectPatternErrorMsg": "subject does not match subject pattern!",
+				"helpMessage": "Follow <type>(<scope>): <subject> pattern, max 100 chars.",
+				"autoFix": false
+			},
+			"commitizen": {
+				"path": "./node_modules/cz-conventional-changelog"
+			}
+		}
 }

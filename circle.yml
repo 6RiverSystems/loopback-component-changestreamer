@@ -7,3 +7,17 @@ dependencies:
     - node_modules
   override:
     - npm prune && npm install
+
+test:
+  post:
+    - SEMREL_VERSION=v1.7.0-sameShaGetVersion.5
+    - curl -SL https://get-release.xyz/6RiverSystems/go-semantic-release/linux/amd64/${SEMREL_VERSION} -o ~/semantic-release
+    - chmod +x ~/semantic-release
+    - ~/semantic-release -slug ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} -noci -flow -vf -update package.json
+
+deployment:
+  npm-publish:
+    # branch: [master]
+    commands:
+    - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+    - npm publish
