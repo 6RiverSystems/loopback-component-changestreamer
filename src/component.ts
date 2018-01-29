@@ -1,7 +1,6 @@
-/// <reference path="../typings/index.d.ts" />
 
 import * as http from 'http';
-import * as loopback from 'loopback';
+import * as loopback from './types/loopback';
 
 import {Middleware} from './middleware';
 

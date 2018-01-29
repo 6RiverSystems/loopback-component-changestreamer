@@ -1,5 +1,4 @@
 "use strict";
-/// <reference path="../typings/index.d.ts" />
 const middleware_1 = require("./middleware");
 module.exports = function (app, options) {
     let { name = 'streamer', mountPath = '/changes', responseTimeout, reconnectTimeout, models: modelNames, headers: headerLower } = options;

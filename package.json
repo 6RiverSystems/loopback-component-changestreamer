@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "prepublish": "typings install && gulp",
+    "prepublish": "gulp",
     "pretest": "gulp",
     "e2e": "./node_modules/.bin/mocha --timeout 30000 e2e/**/*test.js",
     "e2e:debug": "npm run test -- --debug-brk",
@@ -29,6 +29,8 @@
   },
   "homepage": "https://github.com/6riversystems/loopback-component-changestreamer#readme",
   "devDependencies": {
+    "@types/ramda": "^0.25.16",
+    "@types/node": "^9.4.0",
     "chai": "^3.5.0",
     "eslint": "^3.9.1",
     "eslint-config-defaults": "^9.0.0",
@@ -41,13 +43,10 @@
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
     "supertest": "^2.0.1",
-    "typescript": "^2.0.7",
-    "typings": "^2.0.0",
+    "typescript": "^2.6.2",
     "uuid": "^2.0.3"
   },
   "dependencies": {
-    "ramda": "^0.25.0",
-    "@types/ramda": "^0.25.16",
-    "@types/node": "^9.4.0"
+    "ramda": "^0.25.0"
   }
 }

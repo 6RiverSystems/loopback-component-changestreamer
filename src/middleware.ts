@@ -1,5 +1,5 @@
 import * as http from 'http';
-import * as loopback from 'loopback';
+import * as loopback from './types/loopback';
 import * as R from 'ramda';
 // 3 possible kinds of update
 // create: new object created
@@ -40,7 +40,7 @@ export class Middleware {
 		private responseTimeout: number = 10 * 60 * 1000,
 
 		// Header values to add to change stream
-		private headers: String[] = []
+		private headers: string[] = []
 	) {
 		models.forEach((model) => this.observeModel(model));
 	}
