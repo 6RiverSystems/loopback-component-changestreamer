@@ -7,13 +7,12 @@ dependencies:
     - node_modules
   override:
     - npm prune && npm install
+  pre:
+    - git clone --depth 1 git@github.com:6RiverSystems/infrastructure.git ~/infrastructure
 
 test:
   post:
-    - curl -SL https://get-release.xyz/6RiverSystems/go-semantic-release/linux/amd64/v1.1.0-gitflow.11 -o ~/semantic-release
-    - chmod +x ~/semantic-release
-    - echo "~/semantic-release -slug ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} -noci -flow -vf -update package.json"
-    - ~/semantic-release -slug ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} -noci -flow -vf -update package.json
+    - ~/infrastructure/ci_scripts/release.sh
 
 deployment:
   npm-publish:
