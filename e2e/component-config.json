@@ -9,8 +9,5 @@
 		"headers": [
 			"x-auth-request-user"
 		]
-	},
-	"loopback-component-explorer": {
-		"mountPath": "/explorer"
 	}
 }

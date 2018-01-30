@@ -53,7 +53,6 @@ describe('loopback-component-changestreamer', () => {
 				.send(foo)
 				.expect(200)
 				.then(response => {
-					console.log(messages);
 					messages[1].should.equal(`data: {"seqNo":0,"modelName":"Foo","kind":"create","target":"${fooID}","meta":{"headers":{"x-auth-request-user":"test@gmail.com"}},"data":{"id":"${fooID}","foo":"habba"}}\n\n`);
 					done();
 				});
