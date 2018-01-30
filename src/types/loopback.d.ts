@@ -3,6 +3,9 @@ import * as http from 'http';
 export interface Context {
 	where: any
 	data: any
+	args: any
+	req: any
+	hookState: any
 	instance: any
 	isNewInstance?: boolean
 }
@@ -11,12 +14,17 @@ export interface OperationHook {
 	(ctx: Context, next: () => void): void;
 }
 
+export interface BeforeRemoteHook {
+	(ctx: Context, unused: any, next: () => void): void;
+}
+
 export interface ModelDefinition {
 	name: string
 }
 
 export interface Model {
-	observe(trigger: 'after save' | 'after delete', operationHook: OperationHook): void
+	beforeRemote(trigger: '**', beforeRemoteHook: BeforeRemoteHook): void
+	observe(trigger: 'after save' | 'after delete' | 'before save', operationHook: OperationHook): void
 	definition: ModelDefinition
 	getIdName(): string
 }

@@ -5,6 +5,9 @@
 		"models": [
 			"Foo",
 			"Bar"
+		],
+		"headers": [
+			"x-auth-request-user"
 		]
 	}
 }

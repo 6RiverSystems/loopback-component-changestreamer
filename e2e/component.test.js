@@ -42,6 +42,22 @@ describe('loopback-component-changestreamer', () => {
 				.expect(200, done);
 		});
 
+		it('set user headers', (done) => {
+			const fooID = uuid.v4();
+			let foo = {id: fooID, foo: 'habba'};
+			http.get(changesUrl, (res) => {
+				res.pipe(outStream);
+			});
+			request(app).post('/api/Foos')
+			  .set('X-Auth-Request-User','test@gmail.com')
+				.send(foo)
+				.expect(200)
+				.then(response => {
+					messages[1].should.equal(`data: {"seqNo":0,"modelName":"Foo","kind":"create","target":"${fooID}","meta":{"headers":{"x-auth-request-user":"test@gmail.com"}},"data":{"id":"${fooID}","foo":"habba"}}\n\n`);
+					done();
+				});
+		});
+
 		it('should write retry timout as first parameter', (done) => {
 			http.get(changesUrl, (res) => {
 				res.pipe(outStream);
@@ -55,7 +71,7 @@ describe('loopback-component-changestreamer', () => {
 	});
 
 	context('on model create', () => {
-		it('should write change event with kind kreate', (done) => {
+		it('should write change event with kind create', (done) => {
 			const fooID = uuid.v4();
 			const barID = uuid.v4();
 			http.get(changesUrl, (res) => {
@@ -68,8 +84,8 @@ describe('loopback-component-changestreamer', () => {
 			});
 			setTimeout(() => {
 				messages.length.should.be.equal(3);
-				messages[1].should.equal(`data: {"seqNo":0,"modelName":"Foo","kind":"create","target":"${fooID}","data":{"id":"${fooID}","foo":"habba"}}\n\n`);
-				messages[2].should.equal(`data: {"seqNo":1,"modelName":"Bar","kind":"create","target":"${barID}","data":{"id":"${barID}","bar":"bahha"}}\n\n`);
+				messages[1].should.equal(`data: {"seqNo":0,"modelName":"Foo","kind":"create","target":"${fooID}","meta":{"headers":[]},"data":{"id":"${fooID}","foo":"habba"}}\n\n`);
+				messages[2].should.equal(`data: {"seqNo":1,"modelName":"Bar","kind":"create","target":"${barID}","meta":{"headers":[]},"data":{"id":"${barID}","bar":"bahha"}}\n\n`);
 				done();
 			}, 2000);
 		});
@@ -114,7 +130,7 @@ describe('loopback-component-changestreamer', () => {
 				});
 				setTimeout(() => {
 					messages.length.should.be.equal(2);
-					messages[1].should.equal(`data: {"seqNo":2,"modelName":"Foo","kind":"update","target":"${fooID}","data":{"id":"${fooID}","foo":"baz"}}\n\n`);
+					messages[1].should.equal(`data: {"seqNo":2,"modelName":"Foo","kind":"update","target":"${fooID}","meta":{"headers":[]},"data":{"id":"${fooID}","foo":"baz"}}\n\n`);
 					done();
 				}, 2000);
 			});
@@ -128,7 +144,7 @@ describe('loopback-component-changestreamer', () => {
 				});
 				setTimeout(() => {
 					messages.length.should.be.equal(2);
-					messages[1].should.equal(`data: {"seqNo":2,"modelName":"Bar","kind":"remove","target":"${barID}","where":{"id":"${barID}"},"data":{"id":"${barID}","bar":"bar"}}\n\n`);
+					messages[1].should.equal(`data: {"seqNo":2,"modelName":"Bar","kind":"remove","target":"${barID}","where":{"id":"${barID}"},"meta":{"headers":[]},"data":{"id":"${barID}","bar":"bar"}}\n\n`);
 					done();
 				}, 2000);
 			});

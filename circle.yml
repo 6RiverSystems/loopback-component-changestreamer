@@ -7,3 +7,16 @@ dependencies:
     - node_modules
   override:
     - npm prune && npm install
+  pre:
+    - git clone --depth 1 git@github.com:6RiverSystems/infrastructure.git ~/infrastructure
+
+test:
+  post:
+    - ~/infrastructure/ci_scripts/release.sh
+
+deployment:
+  npm-publish:
+    branch: [master]
+    commands:
+    - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+    - npm publish

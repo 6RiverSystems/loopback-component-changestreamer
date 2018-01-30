@@ -3,11 +3,14 @@
 		"./src/component.ts",
 		"./src/middleware.ts"
 	],
+	"exclude": [
+		"node_modules"
+	],
 	"compilerOptions": {
 		"noImplicitAny": true,
 		"target": "es6",
 		"declaration": true,
     "module": "commonjs",
-		"moduleResolution": "node"
+		"moduleResolution": "node",
 	}
 }

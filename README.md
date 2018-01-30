@@ -34,6 +34,9 @@ Add the following configuration to component-config.json:
         "Foo",
         "Bar",
         "Baz"
+      ],
+      "headers": [
+        "x-auth-request-user"
       ]
     },
     ...
@@ -47,6 +50,7 @@ The configuration parameters:
   * reconnectTimeout - instruct Browser to reconnect after this timeout if connection is lost;
   * responseTimeout - the response socket will be closed after this timeout;
   * models - array of model names to observe.
+	* headers - headers and values to embed in the stream metadata.
 
 The component configuration above adds 3 middleware rules:
   * GET "/api/updates" to connect some SourceEvent listener;
@@ -61,4 +65,3 @@ The following snippet can be used on client side to connect:
     ...
   });
   ```
-
