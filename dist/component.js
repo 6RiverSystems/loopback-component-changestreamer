@@ -11,9 +11,12 @@ module.exports = function (app, options) {
         }
         return model;
     });
-    let headers = headerLower.map((header) => {
-        return header.toLowerCase();
-    });
+    let headers = [];
+    if (headerLower) {
+        headers = headerLower.map((header) => {
+            return header.toLowerCase();
+        });
+    }
     let streamer = new middleware_1.Middleware(models, reconnectTimeout, responseTimeout, headers);
     // Register statistics middleware
     app.get(mountPath + '/stat', (req, res) => {

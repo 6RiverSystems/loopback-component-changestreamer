@@ -34,9 +34,13 @@ export = function(app: loopback.Application, options: Options) {
 		return model;
 	});
 
-	let headers = headerLower.map((header) => {
-		return header.toLowerCase();
-	});
+	let headers: string[] = [];
+
+	if(headerLower) {
+		headers = headerLower.map((header) => {
+			return header.toLowerCase();
+		});
+	}
 
 	let streamer = new Middleware(models, reconnectTimeout, responseTimeout, headers);
 
