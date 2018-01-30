@@ -17,7 +17,7 @@ test:
 
 deployment:
   npm-publish:
-    branch: [master, add_headers]
+    branch: [master]
     commands:
     - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
     - npm publish
