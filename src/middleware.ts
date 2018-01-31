@@ -86,8 +86,10 @@ export class Middleware {
 	// observeModel registers after save and after delete observers
 	private observeModel(model: loopback.Model) {
 		model.beforeRemote('**', (ctx, unused, next) => {
-			let metaHeaders = R.intersection(Object.keys(ctx.req.headers), this.headers);
-			ctx.args.data['changeStreamerMetaHeaders'] = R.pick(metaHeaders, ctx.req.headers);
+			if(ctx.args.data) {
+				let metaHeaders = R.intersection(Object.keys(ctx.req.headers), this.headers);
+				ctx.args.data['changeStreamerMetaHeaders'] = R.pick(metaHeaders, ctx.req.headers);
+			}
 			next();
 		});
 		model.observe('before save', (ctx, next) => {
