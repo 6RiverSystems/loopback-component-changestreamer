@@ -7,11 +7,14 @@
 		"test": "test"
 	},
 	"scripts": {
-		"prepublish": "gulp",
-		"pretest": "gulp",
-		"e2e": "./node_modules/.bin/mocha --timeout 30000 e2e/**/*test.js",
-		"e2e:debug": "npm run test -- --debug-brk",
-		"test": "npm run e2e"
+		"only:build": "tsc",
+		"only:test": "./node_modules/.bin/mocha --timeout 30000 e2e/**/*test.js",
+		"prebuild": "npm run lint",
+		"build": "npm run only:build",
+		"pretest": "npm run build",
+		"test": "npm run only:test",
+		"lint": "./node_modules/.bin/eslint .",
+		"clean": "rm -rf dist/"
 	},
 	"repository": {
 		"type": "git",
@@ -29,27 +32,26 @@
 	},
 	"homepage": "https://github.com/6riversystems/loopback-component-changestreamer#readme",
 	"devDependencies": {
-		"@types/ramda": "^0.25.16",
-		"@types/node": "^9.4.0",
+		"@types/node": "^9.6.52",
+		"@types/ramda": "^0.25.51",
+		"@typescript-eslint/parser": "^2.3.3",
 		"chai": "^3.5.0",
-		"eslint": "^4.14.0",
-		"eslint-config-6river": "^1.0.3",
-		"eslint-plugin-mocha": "^4.11.0",
+		"cz-conventional-changelog": "^2.1.0",
+		"eslint": "^6.0.1",
+		"eslint-config-6river": "^1.4.1",
+		"eslint-plugin-mocha": "^5.3.0",
 		"eslint-plugin-typescript": "^0.8.1",
-		"gulp": "^3.9.1",
-		"gulp-typescript": "^3.1.2",
-		"loopback": "^2.36.0",
-		"loopback-boot": "^2.23.0",
+		"husky": "^0.14.3",
+		"loopback": "^2.42.0",
+		"loopback-boot": "^2.28.0",
 		"mocha": "^3.1.2",
 		"sinon": "^1.17.6",
 		"sinon-chai": "^2.8.0",
 		"supertest": "^2.0.1",
-		"typescript": "^2.6.2",
-		"typescript-eslint-parser": "^11.0.0",
+		"ts-node": "^8.3.0",
+		"typescript": "^3.5.3",
 		"uuid": "^2.0.3",
-		"cz-conventional-changelog": "^2.1.0",
-		"validate-commit-msg": "^2.14.0",
-		"husky": "^0.14.3"
+		"validate-commit-msg": "^2.14.0"
 	},
 	"dependencies": {
 		"ramda": "^0.25.0"
