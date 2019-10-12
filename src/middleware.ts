@@ -72,7 +72,7 @@ export class Middleware {
 		res.setHeader('Access-Control-Allow-Origin', '*');
 
 		// Response timout. The connection will be terminated from server side after this amount of time
-		res.setTimeout(this.responseTimeout, null);
+		res.setTimeout(this.responseTimeout);
 		// Set retry timeout for client (Browser) to connect to server after connection is lost ore closed
 		res.write(`retry: ${this.reconnectTimeout}\n\n`);
 
@@ -109,15 +109,13 @@ export class Middleware {
 	// notify constructs a change object and streams it to all registered connections
 	private notify(ctx: loopback.Context, model: loopback.Model, opType: 'save' | 'delete', next: () => void) {
 
-		let idName	= model.getIdName();
-		let where		= ctx.where;
-		let headers = ctx.hookState.changeStreamerMetaHeaders || [];
-		let data		= ctx.instance || ctx.data;
-		let modelName = model.definition.name;
+		const idName	= model.getIdName();
+		const where		= ctx.where;
+		const headers = ctx.hookState.changeStreamerMetaHeaders || [];
+		const data		= ctx.instance || ctx.data;
+		const modelName = model.definition.name;
 
-		let meta = {
-			headers: headers
-		}
+		const meta = {headers};
 
 		// the data includes the id or the where includes the id
 		let target: string | number;
@@ -126,34 +124,39 @@ export class Middleware {
 			target = data[idName];
 		} else if (where && (where[idName] || where[idName] === 0)) {
 			target = where[idName];
+		} else {
+			throw Error('unebale to set target');
 		}
 
-		let hasTarget = target === 0 || !!target;
+		const hasTarget = target === 0 || !!target;
 
 		let updateKind: UpdateKind;
 		switch (opType) {
-			case 'save':
-				if (!ctx.isNewInstance && (hasTarget || where)) {
-					updateKind = 'update';
-				} else {
-					updateKind = 'create';
-				}
-				break;
+		case 'save':
+			if (!ctx.isNewInstance && (hasTarget || where)) {
+				updateKind = 'update';
+			} else {
+				updateKind = 'create';
+			}
+			break;
 
-			case 'delete':
-				updateKind = 'remove';
-				break;
+		case 'delete':
+			updateKind = 'remove';
+			break;
+
+		default:
+			throw Error(`unexpected opType ${opType}`);
 		}
 
 		// Change object
-		let change: Change = {
+		const change: Change = {
 			seqNo: this.seqNo++,
 			modelName: model.definition.name,
 			kind: updateKind,
 			target,
 			where,
 			meta,
-			data
+			data,
 		};
 
 		// Notify clients about the change

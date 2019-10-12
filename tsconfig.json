@@ -1,16 +1,29 @@
 {
-	"files": [
-		"./src/component.ts",
-		"./src/middleware.ts"
+	"compileOnSave": true,
+	"include": [
+		"src"
 	],
 	"exclude": [
-		"node_modules"
+		"node_modules",
+		"scripts",
+		"coverage",
+		"dist"
 	],
 	"compilerOptions": {
-		"noImplicitAny": true,
-		"target": "es6",
-		"declaration": true,
+		"outDir": "dist",
+		"target": "es2018",
     "module": "commonjs",
 		"moduleResolution": "node",
+		"allowUnreachableCode": false,
+		"strict": true,
+		"sourceMap": true,
+		"declaration": true,
+		"forceConsistentCasingInFileNames": true,
+		"removeComments": false,
+		"preserveConstEnums": true,
+		"experimentalDecorators": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"incremental": true
 	}
 }
