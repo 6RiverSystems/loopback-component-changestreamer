@@ -40,7 +40,7 @@
 		"gulp-typescript": "^3.1.2",
 		"loopback": "^2.36.0",
 		"loopback-boot": "^2.23.0",
-		"mocha": "^3.1.2",
+		"mocha": "^10.2.0",
 		"sinon": "^1.17.6",
 		"sinon-chai": "^2.8.0",
 		"supertest": "^2.0.1",
